@@ -48,10 +48,6 @@ export class UiModalPluginConfirm extends UiPlugin {
                 // Plugin references
                 confirm : {
 
-                    // Cancel buttons
-                    // @type {string}
-                    cancel : '[data-modal="ctrl:confirm.cancel"]',
-
                     // Confirm buttons
                     // @type {string}
                     confirm : '[data-modal="ctrl:confirm.confirm"]',
@@ -78,6 +74,9 @@ export class UiModalPluginConfirm extends UiPlugin {
      */
     #event_initialized( event ) {
         if ( event.detail.target !== this.context ) return;
+
+        // Require buttons
+        this.context.requireDomRefs( [ [ 'close', true ], [ 'confirm.confirm', false ] ] );
 
         // Confirm buttons
         bindNodeList( this.context.getDomRefs( 'confirm.confirm' ), [
