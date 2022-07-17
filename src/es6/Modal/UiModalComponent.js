@@ -2,7 +2,7 @@
  * Requires
  */
 import { UiComponent } from '@squirrel-forge/ui-core';
-import { EventDispatcher, Exception, getFocusable, tabFocusLock, bindNodeList } from '@squirrel-forge/ui-util';
+import { EventDispatcher, Exception, bindNodeList, getFocusable, tabFocusLock } from '@squirrel-forge/ui-util';
 
 /**
  * Ui modal component exception
@@ -10,6 +10,20 @@ import { EventDispatcher, Exception, getFocusable, tabFocusLock, bindNodeList } 
  * @extends Exception
  */
 class UiModalComponentException extends Exception {}
+
+/**
+ * @callback UiModalCallbackShow
+ * @param {Function} complete - Function to call when animation is completed
+ * @param {Object|UiModalComponent} - Modal component instance
+ * @return {void}
+ */
+
+/**
+ * @callback UiModalCallbackHide
+ * @param {Function} complete - Function to call when animation is completed
+ * @param {Object|UiModalComponent} - Modal component instance
+ * @return {void}
+ */
 
 /**
  * Ui modal component
@@ -69,6 +83,14 @@ export class UiModalComponent extends UiComponent {
          */
         defaults = defaults || {
 
+            // Context element
+            // @type {documentElement|HTMLElement}
+            context : document.documentElement,
+
+            // Class set on context when modal is open
+            // @type {string}
+            openInContextClass : 'ui-modal-context--active',
+
             // Interaction mode
             // @type {('modal')}
             mode : 'modal',
@@ -96,6 +118,23 @@ export class UiModalComponent extends UiComponent {
             // Hide on click outside dialog or keyboard escape key
             // @type {boolean|Array<config.mode>}
             easyHide : true,
+
+            // Custom animators
+            // @type {Object}
+            animator : {
+
+                // Show modal animator
+                // @type {null|UiModalCallbackShow}
+                show : null,
+
+                // Hide modal animator
+                // @type {null|UiModalCallbackHide}
+                hide : null,
+
+                // Animation speed, default: 300ms
+                // @type {number}
+                speed : null,
+            },
 
             // Dom references
             // @type {Object}
@@ -150,7 +189,7 @@ export class UiModalComponent extends UiComponent {
     init() {
 
         // Check context compatibility
-        if ( !EventDispatcher.isCompat( this.config.context ) ) {
+        if ( !EventDispatcher.isCompat( this.config.get( 'context' ) ) ) {
             throw new UiModalComponentException( 'Option context must be an EventTarget compatible object' );
         }
 
@@ -180,18 +219,18 @@ export class UiModalComponent extends UiComponent {
 
         // Component events
         this.addEventList( [
-            [ 'click', () => { if ( this.#is_mode_true( 'easyHide' ) ) this.hide(); } ],
+            [ 'click', () => { if ( this._modeOptionActive( 'easyHide' ) ) this.hide(); } ],
             [ 'modal.shown', () => { this.#focus_on_shown(); } ],
         ] );
 
         this.dialog.addEventListener( 'click', ( event ) => {
-            if ( this.#is_mode_true( 'easyHide' ) ) event.stopPropagation();
+            if ( this._modeOptionActive( 'easyHide' ) ) event.stopPropagation();
         } );
 
         // Allow for close by escape key if enabled
         document.addEventListener( 'keyup', ( event ) => {
             if ( ( event.keyCode === 27 || event.key === 'Escape' ) && this.open ) {
-                if ( this.#is_mode_true( 'easyHide' ) ) this.hide();
+                if ( this._modeOptionActive( 'easyHide' ) ) this.hide();
             }
         } );
 
@@ -206,16 +245,17 @@ export class UiModalComponent extends UiComponent {
 
     /**
      * Check if given config mode is true or true by mode
-     * @private
+     * @protected
      * @param {string} name - Config option name
      * @return {boolean} - Option enabled
      */
-    #is_mode_true( name ) {
+    _modeOptionActive( name ) {
         const option = this.config.get( name );
         if ( option === true ) return true;
         if ( option instanceof Array ) {
+            if ( option.includes( '!' + this.mode ) ) return false;
             if ( option.includes( this.mode ) ) return true;
-            if ( option.includes( 'all!' ) && !option.includes( '!' + this.mode ) ) return true;
+            if ( option.includes( 'all!' ) ) return true;
         }
         return false;
     }
@@ -226,8 +266,8 @@ export class UiModalComponent extends UiComponent {
      * @return {void}
      */
     #focus_on_shown() {
-        if ( this.#is_mode_true( 'focusOnShown' ) ) {
-            const element = getFocusable( this.dom, this.#is_mode_true( 'focusLast' ), this.config.get( 'dom.focusable' ) );
+        if ( this._modeOptionActive( 'focusOnShown' ) ) {
+            const element = getFocusable( this.dom, this._modeOptionActive( 'focusLast' ), this.config.get( 'dom.focusable' ) );
             if ( element ) element.focus();
         }
     }
@@ -293,7 +333,7 @@ export class UiModalComponent extends UiComponent {
     }
 
     /**
-     * dialog element getter
+     * Dialog element getter
      * @public
      * @return {HTMLElement} - Dialog element
      */
@@ -302,13 +342,48 @@ export class UiModalComponent extends UiComponent {
     }
 
     /**
+     * Title element getter
+     * @public
+     * @return {HTMLElement} - Title element
+     */
+    get title() {
+        return this.getDomRefs( 'title', false );
+    }
+
+    /**
+     * Content element getter
+     * @public
+     * @return {HTMLElement} - Content element
+     */
+    get content() {
+        return this.getDomRefs( 'content', false );
+    }
+
+    #bind_transition_complete( complete ) {
+        let speed = this.config.get( 'animator.speed' );
+        speed = typeof speed === 'number' ? speed : 300;
+
+        // Has transitionend event
+        const hasTransitions = typeof this.dom.style.transition !== 'undefined';
+
+        // Complete event via transition event
+        if ( hasTransitions && speed ) {
+            this.dom.addEventListener( 'transitionend', complete, { once : true } );
+        }
+
+        // Complete event via timeout
+        if ( !hasTransitions || !speed ) {
+            window.setTimeout( complete, speed + 1 );
+        }
+    }
+
+    /**
      * Show modal
      * @param {null|HTMLElement} origin - Last focused element before opening
      * @param {boolean} events - Fire events
-     * @param {boolean} instant - No transition
      * @return {void}
      */
-    show( origin = null, events = true, instant = false ) {
+    show( origin = null, events = true ) {
         if ( !this.open && !this.states.is( 'animating' ) ) {
             this.#origin = origin instanceof HTMLElement ? origin : document.activeElement || null;
             this.states.set( 'animating' );
@@ -322,20 +397,9 @@ export class UiModalComponent extends UiComponent {
             // Get animation callback
             let animator = this.config.get( 'animator.show' );
             if ( typeof animator !== 'function' ) {
-                const options = this.config.get( 'animOptions' );
-
-                // Use slide animator
-                if ( animator === 'slide' ) {
-                    animator = ( complete ) => {
-                        slideShow( this.dom, instant ? 0 : options.speed, options.easing, complete );
-                    };
-                } else if ( typeof animator !== 'function' ) {
-
-                    // Use fade animator by default
-                    animator = ( complete ) => {
-                        fadeIn( this.dom, instant ? 0 : options.speed, options.easing, complete );
-                    };
-                }
+                animator = ( complete ) => {
+                    this.#bind_transition_complete( complete );
+                };
             }
 
             // Set props and states
@@ -343,6 +407,8 @@ export class UiModalComponent extends UiComponent {
             if ( native ) native.setAttribute( 'open', '' );
             this.states.set( 'open' );
             ( native || this.dom ).setAttribute( 'aria-hidden', 'false' );
+            const context_class = this.config.get( 'openInContextClass' );
+            if  ( context_class ) this.config.get( 'context' ).classList.add( context_class );
 
             // Run animator
             animator( () => {
@@ -355,10 +421,9 @@ export class UiModalComponent extends UiComponent {
     /**
      * Hide panel
      * @param {boolean} events - Fire events
-     * @param {boolean} instant - No transition
      * @return {void}
      */
-    hide( events = true, instant = false ) {
+    hide( events = true ) {
         if ( this.open && !this.states.is( 'animating' ) ) {
             this.states.set( 'animating' );
 
@@ -371,20 +436,9 @@ export class UiModalComponent extends UiComponent {
             // Get animation callback
             let animator = this.config.get( 'animator.hide' );
             if ( typeof animator !== 'function' ) {
-                const options = this.config.get( 'animOptions' );
-
-                // Use slide animator
-                if ( animator === 'slide' ) {
-                    animator = ( complete ) => {
-                        slideHide( this.dom, instant ? 0 : options.speed, options.easing, complete );
-                    };
-                } else if ( typeof animator !== 'function' ) {
-
-                    // Use fade animator by default
-                    animator = ( complete ) => {
-                        fadeOut( this.dom, instant ? 0 : options.speed, options.easing, complete );
-                    };
-                }
+                animator = ( complete ) => {
+                    this.#bind_transition_complete( complete );
+                };
             }
 
             // Set props and states
@@ -392,6 +446,8 @@ export class UiModalComponent extends UiComponent {
             if ( native ) native.removeAttribute( 'open' );
             this.states.set( 'closed' );
             ( native || this.dom ).setAttribute( 'aria-hidden', 'true' );
+            const context_class = this.config.get( 'openInContextClass' );
+            if  ( context_class ) this.config.get( 'context' ).classList.remove( context_class );
 
             // Run animator
             animator( () => {
