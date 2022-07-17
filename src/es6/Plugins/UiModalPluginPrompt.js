@@ -48,7 +48,7 @@ export class UiModalPluginPrompt extends UiPlugin {
 
             // Focus first contained element when shown
             // @type {boolean|Array<config.mode>}
-            focusOnShown : [ 'all!', '!prompt' ],
+            focusOnShown : [ '!prompt' ],
 
             // Dom references
             // @type {Object}
@@ -60,10 +60,6 @@ export class UiModalPluginPrompt extends UiPlugin {
                     // Input element reference
                     // @type {string}
                     input : '[name="value"]',
-
-                    // Cancel buttons
-                    // @type {string}
-                    cancel : '[data-modal="ctrl:prompt.cancel"]',
 
                     // Confirm buttons
                     // @type {string}
@@ -92,6 +88,9 @@ export class UiModalPluginPrompt extends UiPlugin {
      */
     #event_initialized( event ) {
         if ( event.detail.target !== this.context ) return;
+
+        // Require buttons
+        this.context.requireDomRefs( [ [ 'close', true ], [ 'prompt.confirm', false ] ] );
 
         // Confirm buttons
         bindNodeList( this.context.getDomRefs( 'prompt.confirm' ), [
@@ -126,9 +125,15 @@ export class UiModalPluginPrompt extends UiPlugin {
         if ( !input || ![ 'input', 'select', 'textarea' ].includes( input.tagName.toLowerCase() ) ) {
             throw new UiModalPluginPromptException( 'Missing or invalid prompt input element' );
         }
-        if ( input.type === 'checkbox' || input.type === 'radio' ) {
+        if ( input.type === 'checkbox' ) {
             if ( input.checked ) return input.value || true;
             return false;
+        } else if ( input.type === 'radio' ) {
+            const inputs = this.context.getDomRefs( 'prompt.input' );
+            for ( let i = 0; i < inputs.length; i++ ) {
+                if ( input.checked ) return input.value;
+            }
+            return null;
         }
         return input.value || null;
     }
