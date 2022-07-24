@@ -2,6 +2,7 @@
  * Requires
  */
 import { UiPlugin } from '@squirrel-forge/ui-core';
+import { bindNodeList } from '@squirrel-forge/ui-util';
 
 /**
  * Ui modal plugin confirm mode
@@ -58,9 +59,16 @@ export class UiModalPluginConfirm extends UiPlugin {
         // Register events
         this.registerEvents = [
             [ 'initialized', ( event ) => { this.#event_initialized( event ); } ],
+            [ 'modal.show', () => {
+                if ( this.context.mode !== 'confirm' ) return;
+                this.context.confirmed = false;
+            } ],
             [ 'modal.hide', ( event ) => {
-                if ( !this.context.dispatchEvent( 'modal.confirm.cancel', null, true, true ) ) {
-                    event.preventDefault();
+                if ( this.context.mode !== 'confirm' ) return;
+                if ( !this.context.confirmed ) {
+                    if ( !this.context.dispatchEvent( 'modal.confirm.cancel', null, true, true ) ) {
+                        event.preventDefault();
+                    }
                 }
             } ],
         ];
@@ -74,15 +82,20 @@ export class UiModalPluginConfirm extends UiPlugin {
      */
     #event_initialized( event ) {
         if ( event.detail.target !== this.context ) return;
+        if ( this.context.mode !== 'confirm' ) return;
 
         // Require buttons
         this.context.requireDomRefs( [ [ 'close', true ], [ 'confirm.confirm', false ] ] );
+
+        // Required confirmed state
+        this.context.confirmed = null;
 
         // Confirm buttons
         bindNodeList( this.context.getDomRefs( 'confirm.confirm' ), [
             [ 'click', ( event ) => {
                 event.preventDefault();
                 if ( this.context.dispatchEvent( 'modal.confirm.confirm', null, true, true ) ) {
+                    this.context.confirmed = true;
                     this.context.hide();
                 }
             } ]

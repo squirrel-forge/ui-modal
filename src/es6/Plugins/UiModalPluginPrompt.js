@@ -71,10 +71,19 @@ export class UiModalPluginPrompt extends UiPlugin {
         // Register events
         this.registerEvents = [
             [ 'initialized', ( event ) => { this.#event_initialized( event ); } ],
+            [ 'modal.show', () => {
+                if ( this.context.mode !== 'prompt' ) return;
+                this.context.confirmed = false;
+
+                // TODO: clear/reset value input to original state?
+            } ],
             [ 'modal.shown', () => { this.#focus_on_shown(); } ],
             [ 'modal.hide', ( event ) => {
-                if ( !this.context.dispatchEvent( 'modal.prompt.cancel', null, true, true ) ) {
-                    event.preventDefault();
+                if ( this.context.mode !== 'prompt' ) return;
+                if ( !this.context.confirmed ) {
+                    if ( !this.context.dispatchEvent( 'modal.prompt.cancel', null, true, true ) ) {
+                        event.preventDefault();
+                    }
                 }
             } ],
         ];
@@ -88,19 +97,26 @@ export class UiModalPluginPrompt extends UiPlugin {
      */
     #event_initialized( event ) {
         if ( event.detail.target !== this.context ) return;
+        if ( this.context.mode !== 'prompt' ) return;
 
         // Require buttons
         this.context.requireDomRefs( [ [ 'close', true ], [ 'prompt.confirm', false ] ] );
+
+        // Required confirmed state
+        this.context.confirmed = null;
 
         // Confirm buttons
         bindNodeList( this.context.getDomRefs( 'prompt.confirm' ), [
             [ 'click', ( event ) => {
                 event.preventDefault();
                 if ( this.context.dispatchEvent( 'modal.prompt.confirm', { value : this.#get_input_value() }, true, true ) ) {
+                    this.context.confirmed = true;
                     this.context.hide();
                 }
             } ]
         ] );
+
+        // TODO: bind key enter to confirm when input/s focused?
     }
 
     /**
@@ -109,10 +125,9 @@ export class UiModalPluginPrompt extends UiPlugin {
      * @return {void}
      */
     #focus_on_shown() {
-        if ( this.mode === 'prompt' ) {
-            const element = this.getDomRefs( 'prompt.input', false );
-            if ( element ) element.focus();
-        }
+        if ( this.context.mode !== 'prompt' ) return;
+        const element = this.getDomRefs( 'prompt.input', false );
+        if ( element ) element.focus();
     }
 
     /**
