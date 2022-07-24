@@ -2,7 +2,7 @@
  * Requires
  */
 import { UiComponent } from '@squirrel-forge/ui-core';
-import { EventDispatcher, Exception, bindNodeList, getFocusable, tabFocusLock } from '@squirrel-forge/ui-util';
+import { EventDispatcher, Exception, bindNodeList, getFocusable, tabFocusLock, trimChar } from '@squirrel-forge/ui-util';
 
 /**
  * Ui modal component exception
@@ -26,6 +26,13 @@ class UiModalComponentException extends Exception {}
  */
 
 /**
+ * @typedef {Function} modalIdGetter
+ * @param {HTMLElement} opener - Trigger element
+ * @param {Function} defaultIdGetter - Default id getter function
+ * @return {string|null} - Modal id
+ */
+
+/**
  * Ui modal component
  * @class
  * @extends UiComponent
@@ -39,6 +46,71 @@ export class UiModalComponent extends UiComponent {
      * @type {null|HTMLElement}
      */
     #origin = null;
+
+    /**
+     * Bind modal opener links
+     * @param {Array<UiModalComponent>} modals - List of modals
+     * @param {modalIdGetter|Function|null} getModalId - Modal id getter function
+     * @param {document|HTMLElement} context - Selection context
+     * @param {string} selector - Opener trigger selector
+     * @return {void}
+     */
+    static bindOpeners( modals, getModalId = null, context = document, selector = '[data-modal="ctrl:open"]' ) {
+
+        // Modals must always be an array
+        if ( !( modals instanceof Array ) ) {
+            throw new UiModalComponentException( 'Argument modals must be an Array of UiModalComponent instances' );
+        }
+
+        // Context must allow us to select elements
+        if ( typeof context.querySelectorAll !== 'function' ) {
+            throw new UiModalComponentException( 'Argument context must supply a querySelectorAll method' );
+        }
+
+        // Element selected from context must always be a list
+        const openers = context.querySelectorAll( selector );
+        if ( !( openers instanceof NodeList || openers instanceof Array ) ) {
+            throw new UiModalComponentException( 'Argument context.querySelectorAll must return a NodeList or Array' );
+        }
+
+        /**
+         * Default modal id getter
+         * @param {HTMLElement} opener - Modal trigger
+         * @return {string|null} - Modal id
+         */
+        const defaultIdGetter = ( opener ) => {
+            const attributes = [ 'data-modal-id', 'aria-controls', 'href', 'value' ];
+            for ( let i = 0; i < attributes.length; i++ ) {
+                if ( opener.hasAttribute( attributes[ i ] ) ) {
+                    const attr_value = opener.getAttribute( attributes[ i ] );
+                    if ( attr_value ) return trimChar( attr_value, '#' );
+                }
+            }
+            return null;
+        };
+
+        // If there is no custom id getter use the default
+        if ( typeof getModalId !== 'function' ) getModalId = defaultIdGetter;
+
+        // Bind all openers
+        for ( let i = 0; i < openers.length; i++ ) {
+            const opener = openers[ i ];
+            opener.addEventListener( 'click', ( event ) => {
+                event.preventDefault();
+                const modal_id = getModalId( opener, defaultIdGetter );
+                if ( typeof modal_id !== 'string' || !modal_id.length ) {
+                    throw new UiModalComponentException( 'Failed to get target modal id on opener' );
+                }
+                for ( let j = 0; j < modals.length; j++ ) {
+                    if ( modals[ i ].dom.id === modal_id ) {
+                        modals[ i ].open = true;
+                        return;
+                    }
+                }
+                throw new UiModalComponentException( 'Modal opener could not find the target modal for: ' + modal_id );
+            } );
+        }
+    }
 
     /**
      * Element selector getter
@@ -74,9 +146,6 @@ export class UiModalComponent extends UiComponent {
         init = true
     ) {
 
-        // Check element type
-        if ( !( element instanceof HTMLElement ) ) throw new UiModalComponentException( 'Argument element must be a HTMLElement' );
-
         /**
          * Default config
          * @type {Object}
@@ -91,13 +160,17 @@ export class UiModalComponent extends UiComponent {
             // @type {string}
             openInContextClass : 'ui-modal-context--active',
 
-            // Interaction mode
+            // Interaction mode, should be set via the UiModalComponent.mode = <boolean>
             // @type {('modal')}
             mode : 'modal',
 
             // Available modes
             // @type {Array<mode>}
             availableModes : [ 'modal' ],
+
+            // Mode class prefix
+            // @type {string}
+            modeClass : 'ui-modal--',
 
             // Restrict tab focus to modal content
             // @type {boolean}
@@ -206,8 +279,11 @@ export class UiModalComponent extends UiComponent {
         // Bind events
         this.bind();
 
-        // Complete init
-        super.init();
+        // Complete init and set mode class and attribute
+        super.init( () => {
+            this.dom.classList.add( this.config.get( 'modeClass' ) + this.mode );
+            this.dom.setAttribute( 'data-mode', this.mode );
+        } );
     }
 
     /**
@@ -292,7 +368,12 @@ export class UiModalComponent extends UiComponent {
         if ( !name || !modes.includes( name ) ) {
             throw new UiModalComponentException( 'Unknown mode "' + mode + '"' );
         }
-        if ( this.mode !== name ) this.config.set( 'mode', name );
+        if ( this.mode !== name ) {
+            this.dom.classList.remove( this.config.get( 'modeClass' ) + this.mode );
+            this.config.set( 'mode', name );
+            this.dom.classList.add( this.config.get( 'modeClass' ) + name );
+            this.dom.setAttribute( 'data-mode', name );
+        }
     }
 
     /**
@@ -359,6 +440,12 @@ export class UiModalComponent extends UiComponent {
         return this.getDomRefs( 'content', false );
     }
 
+    /**
+     * Bind show/hide transition complete/fallback
+     * @private
+     * @param {Function} complete - Complete handler
+     * @return {void}
+     */
     #bind_transition_complete( complete ) {
         let speed = this.config.get( 'animator.speed' );
         speed = typeof speed === 'number' ? speed : 300;
@@ -405,8 +492,8 @@ export class UiModalComponent extends UiComponent {
             // Set props and states
             const native = this.getDomRefs( 'native', false );
             if ( native ) native.setAttribute( 'open', '' );
-            this.states.set( 'open' );
             ( native || this.dom ).setAttribute( 'aria-hidden', 'false' );
+            this.states.set( 'open' );
             const context_class = this.config.get( 'openInContextClass' );
             if  ( context_class ) this.config.get( 'context' ).classList.add( context_class );
 
@@ -444,8 +531,8 @@ export class UiModalComponent extends UiComponent {
             // Set props and states
             const native = this.getDomRefs( 'native', false );
             if ( native ) native.removeAttribute( 'open' );
-            this.states.set( 'closed' );
             ( native || this.dom ).setAttribute( 'aria-hidden', 'true' );
+            this.states.set( 'closed' );
             const context_class = this.config.get( 'openInContextClass' );
             if  ( context_class ) this.config.get( 'context' ).classList.remove( context_class );
 
