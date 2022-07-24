@@ -1,21 +1,20 @@
 /* !
- * @module      : @squirrel-forge/ui-accordion
- * @version     : 0.8.0
+ * @module      : @squirrel-forge/ui-modal
+ * @version     : 0.5.0
  * @license     : MIT
  * @copyright   : 2022 squirrel-forge
  * @author      : Daniel Hartwell aka. siux <me@siux.info>
- * @description : An accessible accordion with events and plugin support, made for the browser and babel compatible.
+ * @description : An accessible modal with events and plugin support, made for the browser and babel compatible.
  */
 
 /**
- * Accordion
+ * Modal
  */
-export { UiModalComponent } from './Accordion/UiAccordionComponent.js';
-export { UiAccordionPanelComponent } from './Accordion/UiAccordionPanelComponent.js';
+export { UiModalComponent } from './Modal/UiModalComponent.js';
 
 /**
  * Plugins
  */
-export { UiModalPluginPrompt } from './Plugins/UiAccordionPluginToggle.js';
-export { UiModalPluginAlert } from './Plugins/UiAccordionPluginSafemode.js';
-export { UiModalPluginConfirm } from './Plugins/UiAccordionPluginScroller.js';
+export { UiModalPluginAlert } from './Plugins/UiModalPluginAlert.js';
+export { UiModalPluginConfirm } from './Plugins/UiModalPluginConfirm.js';
+export { UiModalPluginPrompt } from './Plugins/UiModalPluginPrompt.js';
