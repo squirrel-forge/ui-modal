@@ -126,7 +126,7 @@ export class UiModalPluginPrompt extends UiPlugin {
      */
     #focus_on_shown() {
         if ( this.context.mode !== 'prompt' ) return;
-        const element = this.getDomRefs( 'prompt.input', false );
+        const element = this.context.getDomRefs( 'prompt.input', false );
         if ( element ) element.focus();
     }
 
