@@ -102,8 +102,8 @@ export class UiModalComponent extends UiComponent {
                     throw new UiModalComponentException( 'Failed to get target modal id on opener' );
                 }
                 for ( let j = 0; j < modals.length; j++ ) {
-                    if ( modals[ i ].dom.id === modal_id ) {
-                        modals[ i ].open = true;
+                    if ( modals[ j ].dom.id === modal_id ) {
+                        modals[ j ].open = true;
                         return;
                     }
                 }
