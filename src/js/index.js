@@ -1,6 +1,6 @@
 /* !
  * @module      : @squirrel-forge/ui-modal
- * @version     : 0.5.2
+ * @version     : 0.6.0
  * @license     : MIT
  * @copyright   : 2022 squirrel-forge
  * @author      : Daniel Hartwell aka. siux <me@siux.info>
@@ -11,6 +11,7 @@
  * Modal
  */
 export { UiModalComponent } from './Modal/UiModalComponent.js';
+export { UiModalTemplate } from './Modal/UiModalTemplate.js';
 
 /**
  * Plugins

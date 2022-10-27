@@ -2,7 +2,14 @@
  * Requires
  */
 import { UiComponent } from '@squirrel-forge/ui-core';
-import { EventDispatcher, Exception, bindNodeList, getFocusable, tabFocusLock, trimChar } from '@squirrel-forge/ui-util';
+import {
+    EventDispatcher,
+    Exception,
+    bindNodeList,
+    getFocusable,
+    tabFocusLock,
+    trimChar
+} from '@squirrel-forge/ui-util';
 
 /**
  * Ui modal component exception
@@ -12,6 +19,7 @@ import { EventDispatcher, Exception, bindNodeList, getFocusable, tabFocusLock, t
 class UiModalComponentException extends Exception {}
 
 /**
+ * Ui modal shown callback
  * @callback UiModalCallbackShow
  * @param {Function} complete - Function to call when animation is completed
  * @param {Object|UiModalComponent} - Modal component instance
@@ -19,6 +27,7 @@ class UiModalComponentException extends Exception {}
  */
 
 /**
+ * Ui modal hidden callback
  * @callback UiModalCallbackHide
  * @param {Function} complete - Function to call when animation is completed
  * @param {Object|UiModalComponent} - Modal component instance
@@ -26,10 +35,61 @@ class UiModalComponentException extends Exception {}
  */
 
 /**
+ * Ui modal id getter function
  * @typedef {Function} modalIdGetter
  * @param {HTMLElement} opener - Trigger element
  * @param {Function} defaultIdGetter - Default id getter function
  * @return {string|null} - Modal id
+ */
+
+/**
+ * Ui modal settings
+ * @typedef {Object} UiModalSettings
+ * @property {documentElement|HTMLElement} context - Context element, default: document.documentElement
+ * @property {string} openInContextClass - Class set on context when modal is open, default: 'ui-modal-context--active'
+ * @property {('modal'|'alert'|'confirm'|'prompt')} mode - Interaction mode, might require a corresponding plugin, should be set via the UiModalComponent.mode = <string>, default 'modal'
+ * @property {Array<mode>} availableModes - Available modes, default: [ 'modal' ]
+ * @property {string} modeClass - Mode class prefix, default: 'ui-modal--'
+ * @property {boolean} restrictFocus - Restrict tab focus to modal content, default: true
+ * @property {boolean|Array<mode>} focusOnShown - Focus first contained element when shown, default: true
+ * @property {boolean|Array<mode>} focusLast - Focus last contained element when shown, focusOnShown must be active, default: false
+ * @property {boolean} focusResetOnHidden - Reset focus to the element that was focused before opening the modal, default: true
+ * @property {boolean|Array<mode>} easyHide - Hide on click outside dialog or keyboard escape key, default: true
+ * @property {UiModalAnimators} animator - Custom animators
+ * @property {UiModalDomReferences} dom - Dom references
+ */
+
+/**
+ * Ui modal custom animators
+ * @typedef {Object} UiModalAnimators
+ * @property {null|UiModalCallbackShow} show - Show modal animator
+ * @property {null|UiModalCallbackHide} hide - Hide modal animator
+ * @property {number} speed - Animation speed in ms, default: 300
+ */
+
+/**
+ * Ui modal dom references
+ * @typedef {Object} UiModalDomReferences
+ * @property {string} native - Native dialog reference, default: 'dialog'
+ * @property {string} dialog - Dialog, default: '.ui-modal__dialog'
+ * @property {null|string} focusable - Focusable elements, uses the tabFocusLock default selector if not set, default: null
+ * @property {string} title - Modal title, default: '.ui-modal__dialog-title'
+ * @property {string} content - Modal content, default: '.ui-modal__dialog-content'
+ * @property {string} close - Close buttons, default: '[data-modal="ctrl:close"]'
+ */
+
+/**
+ * Ui modal component states
+ * @typedef {Object} UiModalStates
+ * @property {ComponentStateDefinition} initialized - Initialized state
+ * @property {ComponentStateDefinition} closed - Modal closed state
+ * @property {ComponentStateDefinition} open - Modal open state
+ * @property {ComponentStateDefinition} animating - Modal transition/animating state
+ */
+
+/**
+ * Ui modal available plugins
+ * @typedef {Array<(UiModalPluginAlert|UiModalPluginConfirm|UiModalPluginPrompt)>} UiModalPlugins
  */
 
 /**
@@ -50,12 +110,17 @@ export class UiModalComponent extends UiComponent {
     /**
      * Bind modal opener links
      * @param {Array<UiModalComponent>} modals - List of modals
-     * @param {modalIdGetter|Function|null} getModalId - Modal id getter function
      * @param {document|HTMLElement} context - Selection context
      * @param {string} selector - Opener trigger selector
+     * @param {modalIdGetter|Function|null} getModalId - Modal id getter function
      * @return {void}
      */
-    static bindOpeners( modals, getModalId = null, context = document, selector = '[data-modal="ctrl:open"]' ) {
+    static bindOpeners(
+        modals,
+        context = document,
+        selector = '[data-modal="ctrl:open"]',
+        getModalId = null
+    ) {
 
         // Modals must always be an array
         if ( !( modals instanceof Array ) ) {
@@ -124,12 +189,12 @@ export class UiModalComponent extends UiComponent {
     /**
      * Constructor
      * @constructor
-     * @param {HTMLElement|HTMLOListElement} element - List element
-     * @param {null|Object} settings - Config object
+     * @param {HTMLElement|HTMLElement} element - Block element
+     * @param {null|UiModalSettings|Object} settings - Config object
      * @param {Object} defaults - Default config
-     * @param {Array<Object>} extend - Extend default config
-     * @param {Object} states - States definition
-     * @param {Array<Function|Array<Function,*>>} plugins - Plugins to load
+     * @param {Array<UiModalSettings|Object>} extend - Extend default config
+     * @param {UiModalStates|Object} states - States definition
+     * @param {UiModalPlugins|Array<Function|Array<Function,*>>} plugins - Plugins to load
      * @param {null|UiComponent} parent - Parent object
      * @param {null|console|Object} debug - Debug object
      * @param {boolean} init - Run init method
@@ -160,7 +225,7 @@ export class UiModalComponent extends UiComponent {
             // @type {string}
             openInContextClass : 'ui-modal-context--active',
 
-            // Interaction mode, should be set via the UiModalComponent.mode = <boolean>
+            // Interaction mode, should be set via the UiModalComponent.mode = <string>
             // @type {('modal')}
             mode : 'modal',
 
@@ -547,4 +612,293 @@ export class UiModalComponent extends UiComponent {
             }, this );
         }
     }
+
+    // Inherited from: EventDispatcher
+
+    /**
+     * Check for compatibility
+     * @name UiModalComponent.isCompat
+     * @method
+     * @static
+     * @public
+     * @param {*} obj - EventDispatcher target or parent
+     * @return {boolean} - Is compatible
+     */
+
+    /**
+     * Debug reference
+     * @name UiModalComponent#debug
+     * @property
+     * @readonly
+     * @public
+     * @type {null|console|Object}
+     */
+
+    /**
+     * Target reference
+     * @name UiModalComponent#target
+     * @property
+     * @readonly
+     * @public
+     * @type {null|HTMLElement|EventDispatcher|EventDispatcherInterface}
+     */
+
+    /**
+     * Parent reference
+     * @name UiModalComponent#parent
+     * @property
+     * @readonly
+     * @public
+     * @type {null|HTMLElement|EventDispatcher|EventDispatcherInterface}
+     */
+
+    /**
+     * True if no target element is set
+     * @name UiModalComponent#isSimulated
+     * @property
+     * @readonly
+     * @public
+     * @type {boolean}
+     */
+
+    /**
+     * Dispatch event
+     * @name UiModalComponent#dispatchEvent
+     * @method
+     * @public
+     * @param {string} name - Event name
+     * @param {null|object} detail - Event data
+     * @param {boolean} bubbles - Allow event to bubble
+     * @param {boolean} cancelable - Allow event to be cancelled
+     * @return {boolean} - False if cancelled, true otherwise
+     */
+
+    /**
+     * Check name for existing handlers
+     * @name UiModalComponent#hasSimulated
+     * @method
+     * @public
+     * @param {string} name - Event name
+     * @return {boolean} - True if event has listeners
+     */
+
+    /**
+     * Register event listener
+     * @name UiModalComponent#addEventListener
+     * @method
+     * @public
+     * @param {string} name - Event name
+     * @param {Function} callback - Callback to register for event
+     * @param {boolean|Object} useCaptureOptions - Capture style or options Object
+     * @return {void}
+     */
+
+    /**
+     * Remove event listener
+     * @name UiModalComponent#removeEventListener
+     * @method
+     * @public
+     * @param {string} name - Event name
+     * @param {function} callback - Callback to deregister from event
+     * @param {boolean|Object} useCaptureOptions - Capture style or options Object
+     * @return {void}
+     */
+
+    /**
+     * Register an array of event listeners
+     * @name UiModalComponent#addEventList
+     * @method
+     * @public
+     * @param {Array<Array>} events - Array of addEventListener argument arrays
+     * @return {void}
+     */
+
+    // Inherited from: UiComponent
+
+    /**
+     * Convert attribute value to config value
+     * @name UiModalComponent.configValueFromAttr
+     * @method
+     * @static
+     * @public
+     * @param {null|string} value - Attribute value
+     * @return {*} - Converted value
+     */
+
+    /**
+     * Convert attribute name to config dot path
+     * @name UiModalComponent.configDotNameFromAttr
+     * @method
+     * @static
+     * @public
+     * @param {string} name - Attribute name
+     * @return {string} - Config name
+     */
+
+    /**
+     * Convert config dot path to camel case
+     * @name UiModalComponent.configCamelNameFromDot
+     * @method
+     * @static
+     * @public
+     * @param {string} name - Dot path
+     * @return {string} - Camel case
+     */
+
+    /**
+     * Make ui modal
+     * @name UiModalTemplate.make
+     * @method
+     * @static
+     * @public
+     * @param {HTMLElement} element - Element
+     * @param {null|UiModalSettings|Object} settings - Config object
+     * @param {null|UiModalPlugins|Array} plugins - Plugins array
+     * @param {null|EventDispatcher|HTMLElement} parent - Parent object
+     * @param {null|false|console|Object} debug - Debug object
+     * @param {Function} Construct - Component constructor
+     * @return {UiComponent} - Component object
+     */
+
+    /**
+     * Initialize all ui elements in context
+     * @name UiModalTemplate.makeAll
+     * @method
+     * @static
+     * @public
+     * @param {null|UiModalSettings|Object} settings - Config object
+     * @param {null|UiModalPlugins|Array} plugins - Plugins array
+     * @param {null|EventDispatcher|HTMLElement} parent - Parent object
+     * @param {document|HTMLElement} context - Context to initialize
+     * @param {null|console|Object} debug - Debug object
+     * @param {Function} Construct - Component constructor
+     * @return {Array<UiComponent>} - Initialized components
+     */
+
+    /**
+     * Element selector
+     * @name UiModalComponent#selector
+     * @property
+     * @readonly
+     * @public
+     * @type {string}
+     */
+
+    /**
+     * Component type
+     * @name UiModalComponent#type
+     * @property
+     * @readonly
+     * @public
+     * @type {string}
+     */
+
+    /**
+     * Component dom element
+     * @name UiModalComponent#dom
+     * @property
+     * @readonly
+     * @public
+     * @type {HTMLElement}
+     */
+
+    /**
+     * Component config
+     * @name UiModalComponent#config
+     * @property
+     * @readonly
+     * @public
+     * @type {Config}
+     */
+
+    /**
+     * Component states
+     * @name UiModalComponent#states
+     * @property
+     * @readonly
+     * @public
+     * @type {ComponentStates}
+     */
+
+    /**
+     * Component plugins
+     * @name UiModalComponent#plugins
+     * @property
+     * @readonly
+     * @public
+     * @type {Plugins}
+     */
+
+    /**
+     * Component children
+     * @name UiModalComponent#children
+     * @property
+     * @readonly
+     * @public
+     * @type {Array}
+     */
+
+    /**
+     * Initialize component
+     * @name UiModalComponent#init
+     * @method
+     * @public
+     * @param {null|Function} afterInitialized - Run function after initialized event
+     * @return {void}
+     */
+
+    /**
+     * Initialize child components
+     * @name UiModalComponent#_initChildren
+     * @method
+     * @protected
+     * @return {void}
+     */
+
+    /**
+     * Cycle children
+     * @name UiModalComponent#eachChild
+     * @method
+     * @public
+     * @param {string|Array|Function} filter - Filter or callback function
+     * @param {null|Function} callback - Callback when using a filter
+     * @return {void}
+     */
+
+    /**
+     * Get config from attributes
+     * @name UiModalComponent#getConfigFromAttributes
+     * @method
+     * @public
+     * @param {Array<string>} disregard - Disregard options names
+     * @return {null|Object} - Config object
+     */
+
+    /**
+     * Get dom references from config
+     * @name UiModalComponent#getDomRefs
+     * @method
+     * @public
+     * @param {string} name - Reference name
+     * @param {boolean} multiple - Set false to return one element
+     * @return {null|HTMLElement|NodeList} - Dom reference/s
+     */
+
+    /**
+     * Require dom references
+     * @name UiModalComponent#requireDomRefs
+     * @method
+     * @public
+     * @param {Array<Array<string,boolean>>} refs - Reference requirements
+     * @return {void}
+     */
+
+    /**
+     * Set state from event
+     * @name UiModalComponent#event_state
+     * @method
+     * @public
+     * @param {Event} event - Event object
+     * @return {void}
+     */
 }
