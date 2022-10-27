@@ -1,0 +1,153 @@
+/**
+ * Default implementation of ui-modal component
+ * @use '~@squirrel-forge/ui-modal' as modal;
+ */
+
+/**
+ * Configure module as desired
+ */
+@use '../scss/modal' as modal with (
+  $class: 'ui-modal',
+  $props: 'ui-modal-',
+
+  /**
+   * Element extensions
+   * bem-style mixin maps
+   *-/
+  $dialog-styles: (
+    border-radius: 1rem,
+  ),
+  $header-styles: (
+    background: lightgray,
+  ),
+  $footer-styles: (
+    background: lightgray,
+  ),
+  $content-styles: (
+    font-size: 120%,
+  ),
+  $inner-focus-styles: (
+    outline: 1px dotted deeppink,
+    outline-offset: 2px,
+  ),
+  $outer-focus-styles: (
+    outline: 1px dotted deeppink,
+    outline-offset: 2px,
+  ),
+  $font-styles: null,
+  /* Font styles are only required if used within the extensions */
+);
+
+/**
+ * Configure options as desired
+ *-/
+@include modal.config((
+
+  // Modal z-index
+  // @type {number} unitless number
+  z-index: 1000,
+
+  // Viewport wrap offset horizontal
+  // @type {number} size value
+  view-offset-x: 1rem,
+
+  // Viewport wrap offset vertical
+  // @type {number} size value
+  view-offset-y: 1rem,
+
+  // Dialog width
+  // @type {number} width value
+  width: auto,
+
+  // Dialog min width
+  // @type {number} width value
+  min-width: 0px,
+
+  // Dialog max width
+  // @type {number} width value
+  max-width: max-content,
+
+  // Dialog max height
+  // @type {number} height value
+  max-height: 100%,
+
+  // Dialog padding
+  // @type {list<number>} 1-4 padding values
+  padding: 1rem,
+
+  // Dialog content padding
+  // @type {list<number>} 1-4 padding values
+  content-padding: 0,
+
+  // Dialog header to content spacing
+  // @type {number} size value
+  header-spacing: 1rem,
+
+  // Dialog footer to content spacing
+  // @type {number} size value
+  footer-spacing: 1rem,
+
+  // Backdrop background color
+  // @type {color} color value
+  backdrop-color: rgba(0,0,0,.9),
+
+  // Dialog background color
+  // @type {color} color value
+  background-color: white,
+
+  // Dialog border
+  // @type {none|list} border value
+  border: none,
+
+  // Animation transition
+  // @type {list} transition definition
+  transition: 0.3s ease,
+
+  /**
+   * With outer scroll enabled
+   * class: ui-modal--outer-scroll
+   *
+
+  // Viewport wrap offset horizontal
+  // @type {number} size value
+  outer-scroll-view-offset-x: 1rem,
+
+  // Viewport wrap offset vertical
+  // @type {number} size value
+  outer-scroll-view-offset-y: 1rem,
+
+  // Dialog max width
+  // @type {number} width value
+  outer-scroll-max-width: 600px,
+));
+/**
+ * Does not output any styles before this point
+ */
+
+// Define css custom properties
+:root {
+  @include modal.properties((
+    /**
+     * Add your responsive settings
+     * media query nesting of variables only
+     *-/
+    _at_mobile: (
+      width: 100%,
+      max-width: 100%,
+    )
+    /**/
+  ));
+}
+
+// Output configured styles
+@include modal.styles {
+  /**
+   * Add nested styles after all existing declarations
+   * full sass code
+   *-/
+  &__dialog-title {
+    font-weight: normal;
+    font-size: 120%;
+  }
+  /**/
+}

@@ -1,0 +1,396 @@
+/**
+ * ui-modal
+ *  Custom properties and styles with configuration.
+ */
+
+/**
+ * Requires
+ */
+@use 'sass:meta';
+@use 'sass:map';
+@use '~@squirrel-forge/sass-util/src/abstract';
+@use '~@squirrel-forge/sass-util/src/mixins';
+
+/**
+ * Component css class
+ * @protected
+ * @type {string} css class
+ */
+$class: 'ui-modal' !default;
+
+/**
+ * Component property prefix
+ * @protected
+ * @type {string} property name
+ */
+$props: 'ui-modal-' !default;
+
+/**
+ * Dialog bem markup extension
+ * @protected
+ * @type {null|map} bem-style map
+ */
+$dialog-styles: null !default;
+
+/**
+ * Header bem markup extension
+ * @protected
+ * @type {null|map} bem-style map
+ */
+$header-styles: null !default;
+
+/**
+ * Footer bem markup extension
+ * @protected
+ * @type {null|map} bem-style map
+ */
+$footer-styles: null !default;
+
+/**
+ * Content bem markup extension
+ * @protected
+ * @type {null|map} bem-style map
+ */
+$content-styles: null !default;
+
+/**
+ * Inner focus bem markup extension
+ * @protected
+ * @type {null|map} bem-style map
+ */
+$inner-focus-styles: null !default;
+
+/**
+ * Outer focus bem markup extension
+ * @protected
+ * @type {null|map} bem-style map
+ */
+$outer-focus-styles: null !default;
+
+/**
+ * Fonts reference
+ * @protected
+ * @type {null|map} fonts map
+ */
+$font-styles: null !default;
+
+/**
+ * Config defaults
+ * @private
+ * @type {map}
+ */
+$-config: (
+
+  // Modal z-index
+  // @type {number} unitless number
+  z-index: 1000,
+
+  // Viewport wrap offset horizontal
+  // @type {number} size value
+  view-offset-x: 1rem,
+
+  // Viewport wrap offset vertical
+  // @type {number} size value
+  view-offset-y: 1rem,
+
+  // Dialog width
+  // @type {number} width value
+  width: auto,
+
+  // Dialog min width
+  // @type {number} width value
+  min-width: 0px,
+
+  // Dialog max width
+  // @type {number} width value
+  max-width: max-content,
+
+  // Dialog max height
+  // @type {number} height value
+  max-height: 100%,
+
+  // Dialog padding
+  // @type {list<number>} 1-4 padding values
+  padding: 1rem,
+
+  // Dialog content padding
+  // @type {list<number>} 1-4 padding values
+  content-padding: 0,
+
+  // Dialog header to content spacing
+  // @type {number} size value
+  header-spacing: 1rem,
+
+  // Dialog footer to content spacing
+  // @type {number} size value
+  footer-spacing: 1rem,
+
+  // Backdrop background color
+  // @type {color} color value
+  backdrop-color: rgba(0,0,0,.9),
+
+  // Dialog background color
+  // @type {color} color value
+  background-color: white,
+
+  // Dialog border
+  // @type {none|list} border value
+  border: none,
+
+  // Animation transition
+  // @type {list} transition definition
+  transition: 0.3s ease,
+
+  /**
+   * With outer scroll enabled
+   * class: ui-modal--outer-scroll
+   */
+
+  // Viewport wrap offset horizontal
+  // @type {number} size value
+  outer-scroll-view-offset-x: 1rem,
+
+  // Viewport wrap offset vertical
+  // @type {number} size value
+  outer-scroll-view-offset-y: 1rem,
+
+  // Dialog max width
+  // @type {number} width value
+  outer-scroll-max-width: 600px,
+);
+
+/**
+ * Update component config options
+ * @public
+ * @param {map} $options - Map of config options
+ * @output {void} - Only sets config options
+ */
+@mixin config($options) {
+  $-config: abstract.config($options, $-config, 'ui-modal.config::') !global;
+}
+
+/**
+ * Generate required custom properties
+ * @public
+ * @param {null|map} $extend - Extend properties for output only
+ * @output Adds components custom properties in current scope
+ */
+@mixin properties($extend: null) {
+  $render: abstract.merge-optional($-config, $extend);
+  @include mixins.properties($render, $props, '_at_', 'ui-modal.properties::');
+}
+
+/**
+ * Generate component styles
+ * @public
+ * @content Allows for class custom styles after all other declarations
+ * @output Outputs configured component styles
+ */
+@mixin styles() {
+  .#{$class} {
+    z-index: var(--#{$props}z-index);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 1;
+    transition: var(--#{$props}transition);
+
+    // Backdrop
+    &::before {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: var(--#{$props}backdrop-color);
+      content: '';
+    }
+
+    // Closed state
+    &:not([data-state="open"]) {
+      pointer-events: none;
+      height: 0;
+      opacity: 0;
+    }
+
+    // Viewport wrapper
+    &__wrap {
+      position: absolute;
+      top: var(--#{$props}view-offset-y);
+      right: var(--#{$props}view-offset-x);
+      bottom: var(--#{$props}view-offset-y);
+      left: var(--#{$props}view-offset-x);
+    }
+
+    // Button styles
+    &__button {
+
+      // Center all buttons by default
+      margin: auto;
+
+      // First but not last aligns left
+      &:first-child:not(:last-child) {
+        margin: 0 auto 0 0;
+      }
+
+      // Last but not first aligns right
+      &:last-child:not(:first-child) {
+        margin: 0 0 0 auto;
+      }
+
+      // Default close
+      &--close {
+        .#{$class}__dialog-header & {}
+        .#{$class}__dialog-footer & {}
+      }
+
+      // Cancel action
+      &--cancel {}
+
+      // Confirm action
+      &--confirm {}
+
+      // Alert dismiss
+      &--ok {}
+    }
+
+    // Dialog styles
+    &__dialog {
+
+      // Position
+      position: absolute;
+      margin: 0;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+
+      // Layout
+      display: flex;
+      flex-direction: column;
+      padding: var(--#{$props}padding);
+      width: var(--#{$props}width);
+      min-width: var(--#{$props}min-width);
+      max-width: var(--#{$props}max-width);
+      max-height: var(--#{$props}max-height);
+
+      // Style
+      background-color: var(--#{$props}background-color);
+      border: var(--#{$props}border);
+
+      // Dialog styles
+      @if meta.type-of($dialog-styles) == map {
+        @include mixins.bem-style($dialog-styles, $font-styles);
+      }
+
+      // Running content layout
+      &-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: var(--#{$props}header-spacing);
+        width: 100%;
+
+        // Header only styles
+        @if meta.type-of($header-styles) == map {
+          @include mixins.bem-style($header-styles, $font-styles);
+        }
+      }
+      &-footer {
+        margin-top: var(--#{$props}footer-spacing);
+        width: 100%;
+
+        // Footer only styles
+        @if meta.type-of($footer-styles) == map {
+          @include mixins.bem-style($footer-styles, $font-styles);
+        }
+      }
+
+      // Title and controls layout
+      &-title {
+        display: block;
+        margin: 0;
+      }
+      &-controls {
+        display: flex;
+        flex-wrap: nowrap;
+      }
+
+      // Wrap only, used with outer scroll
+      &-wrap,
+      &-scrollable {
+        width: 100%;
+        flex-grow: 1;
+      }
+
+      // Default inner scrollable content
+      &-scrollable {
+        overflow: auto;
+      }
+
+      // Content wrapper
+      &-content {
+        padding: var(--#{$props}content-padding);
+
+        // Content only styles
+        @if meta.type-of($content-styles) == map {
+          @include mixins.bem-style($content-styles, $font-styles);
+        }
+      }
+    }
+
+    // Focusable content if scrollable
+    @if meta.type-of($inner-focus-styles) == map {
+      &:not(.#{$class}--outer-scroll) {
+        .#{$class}__dialog-scrollable {
+          &:focus-within,
+          &:focus {
+            @include mixins.bem-style($inner-focus-styles, $font-styles);
+          }
+        }
+      }
+    }
+
+    // Outer scroll
+    &--outer-scroll {
+      --#{$props}view-offset-y: var(--#{$props}outer-scroll-view-offset-y);
+      --#{$props}view-offset-x: var(--#{$props}outer-scroll-view-offset-x);
+      --#{$props}max-width: var(--#{$props}outer-scroll-max-width);
+
+      // Handle scrolling on the wrapper
+      .#{$class} {
+        &__wrap {
+          overflow: auto;
+
+          // Focusable content if scrollable
+          @if meta.type-of($outer-focus-styles) == map {
+            &:focus-within,
+            &:focus {
+              @include mixins.bem-style($outer-focus-styles, $font-styles);
+            }
+          }
+        }
+
+        // Reset default positioning
+        &__dialog {
+          position: relative;
+          margin: auto;
+          top: auto;
+          left: auto;
+          transform: none;
+          max-height: none;
+
+          // Reset inner scroll
+          &-scrollable {
+            overflow: initial;
+          }
+        }
+      }
+    }
+
+    // Allow custom override styles
+    @if meta.content-exists() {
+      @content;
+    }
+  }
+}
