@@ -1,0 +1,95 @@
+{# Modal component - twighouse variant #}
+
+{# Set any default classes for the component #}
+{% set classes = ['ui-modal'] %}
+
+{# Set default mode #}
+{% set mode = 'modal' %}
+
+{# Set mode from data attribute or component property #}
+{% if component.attributes.has('data-mode') %}
+    {% set mode = component.attributes.data['data-mode'] %}
+{% elseif component.mode not empty %}
+    {% set mode = component.mode %}
+{% endif %}
+
+{# Set outer scroll if requested #}
+{% if component.scroll == 'outer' %}
+    {% set classes = classes|merge(['ui-modal--outer-scroll']) %}
+{% endif %}
+
+{# Component markup #}
+<section is="ui-modal" {{ component.attributes.addClasses(classes) }}>
+    <div class="ui-modal__wrap" {{ component.scroll == 'outer' ? 'tabindex="0"' : '' }}>
+        <dialog class="ui-modal__dialog">
+            {% if component.header %}
+                <div class="ui-modal__dialog-header">
+                    {% if component.header.title %}
+                        <h3 class="ui-modal__dialog-title">{{ component.header.title }}</h3>
+                    {% endif %}
+                    {% if component.header.custom %}
+                        {{ component.header.custom|raw }}
+                    {% endif %}
+                    {% if component.header.controls %}
+                        <div class="ui-modal__dialog-controls">
+                            {% if component.header.controls.custom %}
+                                {{ component.header.controls.custom|raw }}
+                            {% else %}
+                                <button class="ui-modal__button ui-modal__button--close {{ component.buttons.closetop|default('ui-button ui-button--icon ui-button--icon-only') }}" type="button" data-modal="ctrl:close">
+                                    <span class="ui-modal__icon ui-icon" data-icon="{{ component.icons.closetop|default('close') }}"><span></span></span>
+                                    <span class="ui-modal__label">{{ component.i18n.closetop|default('Close') }}</span>
+                                </button>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+            {% if component.scroll == 'outer' %}
+            <div class="ui-modal__dialog-scrollable" tabindex="0">
+            {% else %}
+            <div class="ui-modal__dialog-wrap">
+            {% endif %}
+                <div class="ui-modal__dialog-content">
+                    {% if component.template and component.content is iterable %}
+                        {% include component.template with {'content':component.content,'document':document} only %}
+                    {% else %}
+                        {{ component.content|raw }}
+                    {% endif %}
+                </div>
+            </div>
+            {% if component.footer %}
+                <div class="ui-modal__dialog-footer">
+                    {% if component.footer.custom %}
+                        {{ component.footer.custom|raw }}
+                    {% endif %}
+                    {% if component.footer.controls %}
+                        <div class="ui-modal__dialog-controls">
+                            {% if component.footer.controls.custom %}
+                                {{ component.footer.controls.custom|raw }}
+                            {% elseif mode == 'modal' %}
+                                <button class="ui-modal__button ui-modal__button--close {{ component.buttons.close|default('ui-button ui-button--icon') }}" type="button" data-modal="ctrl:close">
+                                    <span class="ui-modal__icon ui-icon" data-icon="{{ component.icons.close|default('close') }}"><span></span></span>
+                                    <span class="ui-modal__label">{{ component.i18n.close|default('Close') }}</span>
+                                </button>
+                            {% elseif mode == 'alert' %}
+                                <button class="ui-modal__button ui-modal__button--ok {{ component.buttons.ok|default('ui-button ui-button--icon ui-button--accept') }}" type="button" data-modal="ctrl:close">
+                                    <span class="ui-modal__icon ui-icon" data-icon="{{ component.icons.ok|default('ok') }}"><span></span></span>
+                                    <span class="ui-modal__label">{{ component.i18n.ok|default('Ok') }}</span>
+                                </button>
+                            {% elseif mode == 'confirm' or mode == 'prompt' %}
+                                <button class="ui-modal__button ui-modal__button--cancel {{ component.buttons.cancel|default('ui-button ui-button--icon ui-button--cancel') }}" type="button" data-modal="ctrl:close">
+                                    <span class="ui-modal__icon ui-icon" data-icon="{{ component.icons.cancel|default('cancel') }}"><span></span></span>
+                                    <span class="ui-modal__label">{{ component.i18n.cancel|default('Cancel') }}</span>
+                                </button>
+                                <button class="ui-modal__button ui-modal__button--confirm {{ component.buttons.confirm|default('ui-button ui-button--icon ui-button--confirm') }}" type="button" data-modal="ctrl:{{ mode }}.confirm">
+                                    <span class="ui-modal__icon ui-icon" data-icon="{{ component.icons.confirm|default('confirm') }}"><span></span></span>
+                                    <span class="ui-modal__label">{{ component.i18n.confirm|default('Confirm') }}</span>
+                                </button>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </dialog>
+    </div>
+</section>

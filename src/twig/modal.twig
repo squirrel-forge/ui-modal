@@ -1,0 +1,71 @@
+{# Modal component - simple variant #}
+<section is="ui-modal"{{ id ? 'id="' ~ id ~ '"' : '' }} class="ui-modal {{ classes }}" data-mode="{{ mode }}" {{ attributes }}>
+    <div class="ui-modal__wrap">
+        <dialog class="ui-modal__dialog">
+            {% if header %}
+                <div class="ui-modal__dialog-header">
+                    {% if header.title %}
+                        <h3 class="ui-modal__dialog-title">{{ header.title }}</h3>
+                    {% endif %}
+                    {% if header.custom %}
+                        {{ header.custom|raw }}
+                    {% endif %}
+                    {% if header.controls %}
+                        <div class="ui-modal__dialog-controls">
+                            {% if header.controls.custom %}
+                                {{ header.controls.custom|raw }}
+                            {% else %}
+                                <button class="ui-modal__button ui-modal__button--close {{ buttons.closetop|default('ui-button ui-button--icon ui-button--icon-only') }}" type="button" data-modal="ctrl:close">
+                                    <span class="ui-modal__icon ui-icon" data-icon="{{ icons.closetop|default('close') }}"><span></span></span>
+                                    <span class="ui-modal__label">{{ i18n.closetop|default('Close') }}</span>
+                                </button>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+            <div class="ui-modal__dialog-scrollable" tabindex="0">
+                <div class="ui-modal__dialog-content">
+                    {% if template and content is iterable %}
+                        {% include template with {'content':content} only %}
+                    {% else %}
+                        {{ content|raw }}
+                    {% endif %}
+                </div>
+            </div>
+            {% if footer %}
+                <div class="ui-modal__dialog-footer">
+                    {% if footer.custom %}
+                        {{ footer.custom|raw }}
+                    {% endif %}
+                    {% if footer.controls %}
+                        <div class="ui-modal__dialog-controls">
+                            {% if footer.controls.custom %}
+                                {{ footer.controls.custom|raw }}
+                            {% elseif mode == 'modal' %}
+                                <button class="ui-modal__button ui-modal__button--close {{ buttons.close|default('ui-button ui-button--icon') }}" type="button" data-modal="ctrl:close">
+                                    <span class="ui-modal__icon ui-icon" data-icon="{{ icons.close|default('close') }}"><span></span></span>
+                                    <span class="ui-modal__label">{{ i18n.close|default('Close') }}</span>
+                                </button>
+                            {% elseif mode == 'alert' %}
+                                <button class="ui-modal__button ui-modal__button--ok {{ buttons.ok|default('ui-button ui-button--icon ui-button--accept') }}" type="button" data-modal="ctrl:close">
+                                    <span class="ui-modal__icon ui-icon" data-icon="{{ icons.ok|default('ok') }}"><span></span></span>
+                                    <span class="ui-modal__label">{{ i18n.ok|default('Ok') }}</span>
+                                </button>
+                            {% elseif mode == 'confirm' or mode == 'prompt' %}
+                                <button class="ui-modal__button ui-modal__button--cancel {{ buttons.cancel|default('ui-button ui-button--icon ui-button--cancel') }}" type="button" data-modal="ctrl:close">
+                                    <span class="ui-modal__icon ui-icon" data-icon="{{ icons.cancel|default('cancel') }}"><span></span></span>
+                                    <span class="ui-modal__label">{{ i18n.cancel|default('Cancel') }}</span>
+                                </button>
+                                <button class="ui-modal__button ui-modal__button--confirm {{ buttons.confirm|default('ui-button ui-button--icon ui-button--confirm') }}" type="button" data-modal="ctrl:{{ mode }}.confirm">
+                                    <span class="ui-modal__icon ui-icon" data-icon="{{ icons.confirm|default('confirm') }}"><span></span></span>
+                                    <span class="ui-modal__label">{{ i18n.confirm|default('Confirm') }}</span>
+                                </button>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </dialog>
+    </div>
+</section>
