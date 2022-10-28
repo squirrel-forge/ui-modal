@@ -166,14 +166,52 @@ It is recommended to use one of the provided templates, or adapt one:
 
 ##### Blade template
 
-> **WIP**
-
 A blade template for usage with laravel: [blade/modal.blade.php](../src/blade/modal.blade.php).
 Copy the template to your *resources/views* folder and use following data structure:
 
 ```php
 $data = [
- 'id' => null|string,
+    'id' => null|string,
+    'mode' => 'modal'|'alert'|'confirm'|'prompt',
+    'classes' => null|string|array,
+    'attributes' => null|string|array,
+    'header' => null|[
+        'title' => null,
+        'custom' => null,
+        'controls' => null|bool|[
+            'custom' => null,
+        ],
+    ],
+    'template' => null|string,
+    'content' => string|array,
+    'scroll' => null|'inner'|'outer',
+    'footer' => null|[
+        'custom' => null,
+        'controls' => null|bool[
+            'custom' => null,
+        ],
+    ],
+    'icons' => null|[
+        'closetop' => null|string,
+        'close' => null|string,
+        'ok' => null|string,
+        'cancel' => null|string,
+        'confirm' => null|string,
+    ],
+    'i18n' => null|[
+        'closetop' => null|string,
+        'close' => null|string,
+        'ok' => null|string,
+        'cancel' => null|string,
+        'confirm' => null|string,
+    ],
+    'buttons' => null|[
+        'closetop' => null|string,
+        'close' => null|string,
+        'ok' => null|string,
+        'cancel' => null|string,
+        'confirm' => null|string,
+    ],
 ];
 ```
 
