@@ -239,21 +239,6 @@ $-config: (
       &:last-child:not(:first-child) {
         margin: 0 0 0 auto;
       }
-
-      // Default close
-      &--close {
-        .#{$class}__dialog-header & {}
-        .#{$class}__dialog-footer & {}
-      }
-
-      // Cancel action
-      &--cancel {}
-
-      // Confirm action
-      &--confirm {}
-
-      // Alert dismiss
-      &--ok {}
     }
 
     // Dialog styles

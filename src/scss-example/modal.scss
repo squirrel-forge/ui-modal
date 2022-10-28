@@ -145,6 +145,27 @@
    * Add nested styles after all existing declarations
    * full sass code
    *-/
+  &__button {
+
+      // Default close
+      &--close {
+        .#{modal.$class}__dialog-header & {
+          // Only inside header
+        }
+        .#{modal.$class}__dialog-footer & {
+          // Only inside footer
+        }
+      }
+
+      // Cancel action
+      &--cancel {}
+
+      // Confirm action
+      &--confirm {}
+
+      // Alert dismiss
+      &--ok {}
+  }
   &__dialog-title {
     font-weight: normal;
     font-size: 120%;
