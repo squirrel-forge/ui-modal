@@ -1,5 +1,6 @@
 # @squirrel-forge/ui-modal
-An accessible modal with events and plugin support, made for the browser and babel compatible.
+
+An accessible modal with custom events, plugin support, css and sass styling options and multiple template formats.
 
 ## Installation
 
@@ -9,25 +10,45 @@ npm i @squirrel-forge/ui-modal
 
 ## Usage
 
-```
-import { Class, function } from '@squirrel-forge/ui-modal';
+**Javascript es10**
+```js
+import { UiModalComponent } from '@squirrel-forge/ui-modal';
 ```
 
-## Documentation
-The documentation is also included in the package.
+**Sass**
+```scss
+@use '~@squirrel-forge/ui-modal' as modal;
+```
 
 ### Table of contents
-Package contents listing by namespace.
+
+Package contents listing by type and namespace.
+
+#### Javascript
 
  - [Modal](docs/Modal.md)
-   - [UiModalComponent](docs/Modal.md#UiModalComponent)
+   - [UiModalComponent](docs/Modal.md#uimodalcomponent)
+   - [UiModalTemplate](docs/Modal.md#uimodaltemplate)
  - [Plugins](docs/Plugins.md)
-   - [UiModalPluginAlert](docs/Plugins.md#UiModalPluginAlert)
-   - [UiModalPluginConfirm](docs/Plugins.md#UiModalPluginConfirm)
-   - [UiModalPluginPrompt](docs/Plugins.md#UiModalPluginPrompt)
+   - [UiModalPluginAlert](docs/Plugins.md#uimodalpluginalert)
+   - [UiModalPluginConfirm](docs/Plugins.md#uimodalpluginconfirm)
+   - [UiModalPluginPrompt](docs/Plugins.md#uimodalpluginprompt)
 
-## Issues and docs
-If you encounter any issues, please report [here](https://github.com/squirrel-forge/ui-modal/issues).
+#### Markup
+
+ - [Blade](docs/Modal.md#blade-template)
+ - [HTML](docs/Modal.md#html-static-for-adaption)
+ - [Twig](docs/Modal.md#twig-templates)
+ - [Minimal](docs/Modal.md#minimal-markup)
+
+#### Styling
+
+ - [CSS](docs/Modal.md#css-styles)
+ - [Sass](docs/Modal.md#sass-module)
+ - [Minimal](docs/Modal.md#minimal-styling)
+
+## Feedback and issues
+For feedback or if you encounter any issues, please report [here](https://github.com/squirrel-forge/ui-modal/issues).
 
 ---
 
