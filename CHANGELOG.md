@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.6.0
+ - Added javascript template class definition with defaults and options.
+ - Added html template markup with replacement notes.
+ - Added twig template markup with options and variants.
+ - Added blade template markup and options.
+ - Added sass module for usage with the @use syntax.
+ - Added sass module usage example.
+ - Added css precompiled default module for inclusion.
+ - Added minimal scss styles and markup to docs.
+ - Added more code docs for better autocompletion.
+ - Fixed some wrong code docs information.
+ - Changed *UiModalComponent.bindOpeners* argument order and moved 2nd argument *modalIdGetter* to last.
+
 ## 0.5.2
  - Fixed *UiModalComponent.bindOpeners()* modal iteration variable for matching modal to opener.
 
