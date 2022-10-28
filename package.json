@@ -1,9 +1,15 @@
 {
   "name": "@squirrel-forge/ui-modal",
-  "version": "0.5.2",
-  "description": "An accessible modal with events and plugin support, made for the browser and babel compatible.",
-  "main": "src/es6/index.js",
+  "version": "0.6.0",
+  "description": "An accessible modal with custom events, plugin support, css and sass styling options and multiple template formats.",
+  "main": "src/js/index.js",
+  "style": "src/css/modal.min.css",
+  "sass": "src/scss/_modal.scss",
+  "scss": "src/scss/_modal.scss",
+  "twighouse": "src/twig",
   "scripts": {
+    "sass:render": "build-scss src/scss-example src/css -d -x -u",
+    "sass:publish": "build-scss src/scss-example src/css -p -x",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "directories": {
@@ -19,8 +25,14 @@
     "modal",
     "custom-events",
     "plugins",
-    "es6",
+    "es10",
     "babel",
+    "sass",
+    "scss",
+    "template",
+    "blade",
+    "twig",
+    "module",
     "browser"
   ],
   "author": "Daniel Hartwell <me@siux.info> (http://siux.info)",
@@ -29,7 +41,13 @@
     "url": "https://github.com/squirrel-forge/ui-modal/issues"
   },
   "homepage": "https://github.com/squirrel-forge/ui-modal#readme",
+  "devDependencies": {
+    "@squirrel-forge/build-scss": "^0.8.x",
+    "@squirrel-forge/sass-base64-loader": "^0.11.x",
+    "@squirrel-forge/sass-package-importer": "^0.11.x"
+  },
   "dependencies": {
-    "@squirrel-forge/ui-core": "^0.10.x"
+    "@squirrel-forge/sass-util": "^0.9.x",
+    "@squirrel-forge/ui-core": "^0.11.x"
   }
 }
