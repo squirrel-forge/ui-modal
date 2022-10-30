@@ -1,6 +1,6 @@
 {
   "name": "@squirrel-forge/ui-modal",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "An accessible modal with custom events, plugin support, css and sass styling options and multiple template formats.",
   "main": "src/js/index.js",
   "style": "src/css/modal.min.css",
