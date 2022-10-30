@@ -80,9 +80,9 @@
                             @if(!empty($header['controls']['custom']))
                                 {!! $header['controls']['custom'] !!}
                             @else
-                                <button class="ui-modal__button ui-modal__button--close {{ $buttons['closetop'] ?? 'ui-button ui-button--icon ui-button--icon-only' }}" type="button" data-modal="ctrl:close">
+                                <button class="ui-modal__button ui-modal__button--close {{ $buttons['closetop'] ?? 'ui-button ui-button--icon ui-button--label-hidden ui-button--close' }}" type="button" data-modal="ctrl:close">
                                     <span class="ui-modal__icon ui-icon" data-icon="{{ $icons['closetop'] ?? 'close' }}"><span></span></span>
-                                    <span class="ui-modal__label">{{ $i18n['closetop'] ?? 'Close' }}</span>
+                                    <span class="ui-modal__label ui-button__label">{{ $i18n['closetop'] ?? 'Close' }}</span>
                                 </button>
                             @endif
                         </div>
@@ -112,23 +112,23 @@
                             @if(!empty($footer['controls']['custom']))
                                 {!! $footer['controls']['custom'] !!}
                             @elseif($mode == 'modal')
-                                <button class="ui-modal__button ui-modal__button--close {{ $buttons['close'] ?? 'ui-button ui-button--icon' }}" type="button" data-modal="ctrl:close">
+                                <button class="ui-modal__button ui-modal__button--close {{ $buttons['close'] ?? 'ui-button ui-button--icon ui-button--close' }}" type="button" data-modal="ctrl:close">
                                     <span class="ui-modal__icon ui-icon" data-icon="{{ $icons['close'] ?? 'close' }}"><span></span></span>
-                                    <span class="ui-modal__label">{{ $i18n['close'] ?? 'Close' }}</span>
+                                    <span class="ui-modal__label ui-button__label">{{ $i18n['close'] ?? 'Close' }}</span>
                                 </button>
                             @elseif($mode == 'alert')
                                 <button class="ui-modal__button ui-modal__button--ok {{ $buttons['ok'] ?? 'ui-button ui-button--icon ui-button--accept' }}" type="button" data-modal="ctrl:close">
                                     <span class="ui-modal__icon ui-icon" data-icon="{{ $icons['ok'] ?? 'ok' }}"><span></span></span>
-                                    <span class="ui-modal__label">{{ $i18n['ok'] ?? 'Ok' }}</span>
+                                    <span class="ui-modal__label ui-button__label">{{ $i18n['ok'] ?? 'Ok' }}</span>
                                 </button>
                             @elseif($mode == 'confirm' || $mode == 'prompt')
                                 <button class="ui-modal__button ui-modal__button--cancel {{ $buttons['cancel'] ?? 'ui-button ui-button--icon ui-button--cancel' }}" type="button" data-modal="ctrl:close">
                                     <span class="ui-modal__icon ui-icon" data-icon="{{ $icons['cancel'] ?? 'cancel' }}"><span></span></span>
-                                    <span class="ui-modal__label">{{ $i18n['cancel'] ?? 'Cancel' }}</span>
+                                    <span class="ui-modal__label ui-button__label">{{ $i18n['cancel'] ?? 'Cancel' }}</span>
                                 </button>
                                 <button class="ui-modal__button ui-modal__button--confirm {{ $buttons['confirm'] ?? 'ui-button ui-button--icon ui-button--confirm' }}" type="button" data-modal="ctrl:{{ mode }}.confirm">
                                     <span class="ui-modal__icon ui-icon" data-icon="{{ $icons['confirm'] ?? 'confirm' }}"><span></span></span>
-                                    <span class="ui-modal__label">{{ $i18n['confirm'] ?? 'Confirm' }}</span>
+                                    <span class="ui-modal__label ui-button__label">{{ $i18n['confirm'] ?? 'Confirm' }}</span>
                                 </button>
                             @endif
                         </div>

@@ -126,8 +126,8 @@ export class UiModalTemplate extends UiTemplate {
             confirm : 'Confirm',
         },
         buttons : {
-            closetop : 'ui-button ui-button--icon ui-button--icon-only',
-            close : 'ui-button ui-button--icon',
+            closetop : 'ui-button ui-button--icon ui-button--label-hidden ui-button--close',
+            close : 'ui-button ui-button--icon ui-button--close',
             ok : 'ui-button ui-button--icon ui-button--accept',
             cancel : 'ui-button ui-button--icon ui-button--cancel',
             confirm : 'ui-button ui-button--icon ui-button--confirm',
@@ -187,7 +187,7 @@ export class UiModalTemplate extends UiTemplate {
                                 data.header.controls.custom
                                 : `<button class="ui-modal__button ui-modal__button--close ${data.buttons.closetop}" type="button" data-modal="ctrl:close">` +
                                     `<span class="ui-modal__icon ui-icon" data-icon="${data.icons.closetop}"><span></span></span>` +
-                                    `<span class="ui-modal__label">${data.i18n.closetop}</span></button>`
+                                    `<span class="ui-modal__label ui-button__label">${data.i18n.closetop}</span></button>`
                             ) + `</div>`
                             : ''
                         ) + `</div>`
@@ -206,18 +206,18 @@ export class UiModalTemplate extends UiTemplate {
                                         : ( mode === 'modal' ?
                                             `<button class="ui-modal__button ui-modal__button--close ${data.buttons.close}" type="button" data-modal="ctrl:close">` +
                                                 `<span class="ui-modal__icon ui-icon" data-icon="${data.icons.close}"><span></span></span>` +
-                                                `<span class="ui-modal__label">${data.i18n.close}</span></button>`
+                                                `<span class="ui-modal__label ui-button__label">${data.i18n.close}</span></button>`
                                             : ( mode === 'alert' ?
                                                 `<button class="ui-modal__button ui-modal__button--ok ${data.buttons.ok}" type="button" data-modal="ctrl:close">` +
                                                     `<span class="ui-modal__icon ui-icon" data-icon="${data.icons.ok}"><span></span></span>` +
-                                                    `<span class="ui-modal__label">${data.i18n.ok}</span></button>`
+                                                    `<span class="ui-modal__label ui-button__label">${data.i18n.ok}</span></button>`
                                                 : ( mode === 'confirm' || mode === 'prompt' ?
                                                     `<button class="ui-modal__button ui-modal__button--cancel ${data.buttons.cancel}" type="button" data-modal="ctrl:close">` +
                                                         `<span class="ui-modal__icon ui-icon" data-icon="${data.icons.cancel}"><span></span></span>` +
-                                                        `<span class="ui-modal__label">${data.i18n.cancel}</span></button>` +
+                                                        `<span class="ui-modal__label ui-button__label">${data.i18n.cancel}</span></button>` +
                                                     `<button class="ui-modal__button ui-modal__button--confirm ${data.buttons.confirm}" type="button" data-modal="ctrl:${ mode }.confirm">` +
                                                         `<span class="ui-modal__icon ui-icon" data-icon="${data.icons.confirm}"><span></span></span>` +
-                                                    `<span class="ui-modal__label">${data.i18n.confirm}</span></button>`
+                                                    `<span class="ui-modal__label ui-button__label">${data.i18n.confirm}</span></button>`
                                                     : ''
                                                   )
                                               )
