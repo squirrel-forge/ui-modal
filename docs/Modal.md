@@ -222,8 +222,8 @@ Two twig implementations are a available:
 **Simple adaptable** [twig/modal.twig](../src/twig/modal.twig) with following data structure:
 ```javascript
 const data = {
-    id : undefined|false|null|String,
-    classes : undefined|false|null|String,
+    id : undefined|null|String,
+    classes : undefined|null|String,
     mode : 'modal'|'alert'|'confirm'|'prompt',
     attributes : undefined|null|String,
     header : undefined|null|Boolean|{

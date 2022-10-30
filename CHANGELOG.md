@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.1
+ - Update button and label classes in all templates.
+
 ## 0.6.0
  - Added javascript template class definition with defaults and options.
  - Added html template markup with replacement notes.
