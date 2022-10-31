@@ -113,10 +113,10 @@ export class UiModalTemplate extends UiTemplate {
         },
         icons : {
             closetop : 'close',
-            close : 'close',
-            ok : 'ok',
-            cancel : 'cancel',
-            confirm : 'confirm',
+            close : 'close-small',
+            ok : 'check',
+            cancel : 'close-small',
+            confirm : 'check',
         },
         i18n : {
             closetop : 'Close',

@@ -44,21 +44,21 @@
                                 {{ footer.controls.custom|raw }}
                             {% elseif mode == 'modal' %}
                                 <button class="ui-modal__button ui-modal__button--close {{ buttons.close|default('ui-button ui-button--icon ui-button--close') }}" type="button" data-modal="ctrl:close">
-                                    <span class="ui-modal__icon ui-icon" data-icon="{{ icons.close|default('close') }}"><span></span></span>
+                                    <span class="ui-modal__icon ui-icon" data-icon="{{ icons.close|default('close-small') }}"><span></span></span>
                                     <span class="ui-modal__label ui-button__label">{{ i18n.close|default('Close') }}</span>
                                 </button>
                             {% elseif mode == 'alert' %}
                                 <button class="ui-modal__button ui-modal__button--ok {{ buttons.ok|default('ui-button ui-button--icon ui-button--accept') }}" type="button" data-modal="ctrl:close">
-                                    <span class="ui-modal__icon ui-icon" data-icon="{{ icons.ok|default('ok') }}"><span></span></span>
+                                    <span class="ui-modal__icon ui-icon" data-icon="{{ icons.ok|default('check') }}"><span></span></span>
                                     <span class="ui-modal__label ui-button__label">{{ i18n.ok|default('Ok') }}</span>
                                 </button>
                             {% elseif mode == 'confirm' or mode == 'prompt' %}
                                 <button class="ui-modal__button ui-modal__button--cancel {{ buttons.cancel|default('ui-button ui-button--icon ui-button--cancel') }}" type="button" data-modal="ctrl:close">
-                                    <span class="ui-modal__icon ui-icon" data-icon="{{ icons.cancel|default('cancel') }}"><span></span></span>
+                                    <span class="ui-modal__icon ui-icon" data-icon="{{ icons.cancel|default('close-small') }}"><span></span></span>
                                     <span class="ui-modal__label ui-button__label">{{ i18n.cancel|default('Cancel') }}</span>
                                 </button>
                                 <button class="ui-modal__button ui-modal__button--confirm {{ buttons.confirm|default('ui-button ui-button--icon ui-button--confirm') }}" type="button" data-modal="ctrl:{{ mode }}.confirm">
-                                    <span class="ui-modal__icon ui-icon" data-icon="{{ icons.confirm|default('confirm') }}"><span></span></span>
+                                    <span class="ui-modal__icon ui-icon" data-icon="{{ icons.confirm|default('check') }}"><span></span></span>
                                     <span class="ui-modal__label ui-button__label">{{ i18n.confirm|default('Confirm') }}</span>
                                 </button>
                             {% endif %}
