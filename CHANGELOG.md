@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.2
+ - Fix sass module path dependencies.
+ - Update template default icons.
+
 ## 0.6.1
  - Update button and label classes in all templates.
 
