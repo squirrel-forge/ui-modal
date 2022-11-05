@@ -115,15 +115,15 @@ $-config: (
 
   // Dialog content padding
   // @type {list<number>} 1-4 padding values
-  content-padding: 0,
+  content-padding: 0.5rem 0,
 
   // Dialog header to content spacing
   // @type {number} size value
-  header-spacing: 1rem,
+  header-spacing: 0.5rem,
 
   // Dialog footer to content spacing
   // @type {number} size value
-  footer-spacing: 1rem,
+  footer-spacing: 0.5rem,
 
   // Backdrop background color
   // @type {color} color value
