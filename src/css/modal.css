@@ -18,9 +18,9 @@
   --ui-modal-max-width: max-content;
   --ui-modal-max-height: 100%;
   --ui-modal-padding: 1rem;
-  --ui-modal-content-padding: 0;
-  --ui-modal-header-spacing: 1rem;
-  --ui-modal-footer-spacing: 1rem;
+  --ui-modal-content-padding: 0.5rem 0;
+  --ui-modal-header-spacing: 0.5rem;
+  --ui-modal-footer-spacing: 0.5rem;
   --ui-modal-backdrop-color: rgba(0, 0, 0, 0.9);
   --ui-modal-background-color: white;
   --ui-modal-border: none;
