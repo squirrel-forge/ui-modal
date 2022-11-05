@@ -272,6 +272,10 @@ export class UiModalComponent extends UiComponent {
                 // Animation speed, default: 300ms
                 // @type {number}
                 speed : null,
+
+                // Control visibility, default: true
+                // @type {boolean}
+                vis : true,
             },
 
             // Dom references
@@ -339,10 +343,18 @@ export class UiModalComponent extends UiComponent {
         }
 
         // Initialize tab focus locking
-        tabFocusLock( this.dom, () => { return this.config.get( 'restrictFocus' ); }, true, this.config.get( 'dom.focusable' ) );
+        tabFocusLock( this.dom, () => { return this.open && this.config.get( 'restrictFocus' ); }, true, this.config.get( 'dom.focusable' ) );
 
         // Bind events
         this.bind();
+
+        // Initial hidden state
+        if ( this.config.get( 'animator.vis' ) ) this.dom.style.display = 'none';
+        if ( native ) native.removeAttribute( 'open' );
+        ( native || this.dom ).setAttribute( 'aria-hidden', 'true' );
+        this.states.set( 'closed' );
+        const context_class = this.config.get( 'openInContextClass' );
+        if  ( context_class ) this.config.get( 'context' ).classList.remove( context_class );
 
         // Complete init and set mode class and attribute
         super.init( () => {
@@ -553,20 +565,23 @@ export class UiModalComponent extends UiComponent {
                     this.#bind_transition_complete( complete );
                 };
             }
+            if ( this.config.get( 'animator.vis' ) ) this.dom.style.display = '';
+            window.setTimeout( () => {
 
-            // Set props and states
-            const native = this.getDomRefs( 'native', false );
-            if ( native ) native.setAttribute( 'open', '' );
-            ( native || this.dom ).setAttribute( 'aria-hidden', 'false' );
-            this.states.set( 'open' );
-            const context_class = this.config.get( 'openInContextClass' );
-            if  ( context_class ) this.config.get( 'context' ).classList.add( context_class );
+                // Set props and states
+                const native = this.getDomRefs( 'native', false );
+                if ( native ) native.setAttribute( 'open', '' );
+                ( native || this.dom ).setAttribute( 'aria-hidden', 'false' );
+                this.states.set( 'open' );
+                const context_class = this.config.get( 'openInContextClass' );
+                if  ( context_class ) this.config.get( 'context' ).classList.add( context_class );
 
-            // Run animator
-            animator( () => {
-                this.states.unset( 'animating' );
-                if ( events ) this.dispatchEvent( 'modal.shown' );
-            }, this );
+                // Run animator
+                animator( () => {
+                    this.states.unset( 'animating' );
+                    if ( events ) this.dispatchEvent( 'modal.shown' );
+                }, this );
+            }, 1 );
         }
     }
 
@@ -604,6 +619,7 @@ export class UiModalComponent extends UiComponent {
             // Run animator
             animator( () => {
                 this.states.unset( 'animating' );
+                if ( this.config.get( 'animator.vis' ) ) this.dom.style.display = 'none';
                 if ( this.#origin && this.config.get( 'focusResetOnHidden' ) ) {
                     this.#origin.focus();
                 }
