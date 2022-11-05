@@ -84,6 +84,10 @@ const defaults = {
         // Animation speed, default: 300ms
         // @type {number}
         speed : null,
+
+        // Control visibility, default: true
+        // @type {boolean}
+        vis : true,
     },
 
     // Dom references

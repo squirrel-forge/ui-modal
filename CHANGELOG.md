@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.3
+ - Fixed *tabFocusLock* for hidden modals.
+ - Added *display* control via *animator.vis* option, default true, fixes focusable hidden elements.
+ - Improved sass module default values.
+
 ## 0.6.2
  - Fix sass module path dependencies.
  - Update template default icons.
