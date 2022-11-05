@@ -1,6 +1,6 @@
 /* !
  * @module      : @squirrel-forge/ui-modal
- * @version     : 0.6.0
+ * @version     : 0.6.3
  * @license     : MIT
  * @copyright   : 2022 squirrel-forge
  * @author      : Daniel Hartwell aka. siux <me@siux.info>
