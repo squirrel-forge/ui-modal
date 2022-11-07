@@ -581,7 +581,7 @@ export class UiModalComponent extends UiComponent {
                     this.states.unset( 'animating' );
                     if ( events ) this.dispatchEvent( 'modal.shown' );
                 }, this );
-            }, 1 );
+            }, 10 );
         }
     }
 
