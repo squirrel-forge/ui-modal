@@ -19,6 +19,7 @@ class UiModalTemplateException extends Exception {}
  * @property {null|Array<string>} classes - List of classes
  * @property {null|Array<string>} attributes - List of attributes
  * @property {null|UiModalTemplateHeaderData} header - Header definition
+ * @property {boolean} focusable - Content focusable
  * @property {string} content - Modal content
  * @property {null|UiModalTemplateFooterData} footer - Footer definition
  * @property {null|UiModalTemplateIconsData} icons - Icons names
@@ -41,7 +42,9 @@ class UiModalTemplateException extends Exception {}
 
 /**
  * @typedef {Object} UiModalTemplateControlsData - Ui modal template controls data
+ * @property {null|string} before - Custom controls content
  * @property {null|string} custom - Custom controls content
+ * @property {null|string} after - Custom controls content
  */
 
 /**
@@ -101,14 +104,19 @@ export class UiModalTemplate extends UiTemplate {
             title : null,
             custom : null,
             controls : {
+                before : null,
                 custom : null,
+                after : null,
             }
         },
+        focusable : true,
         content : null,
         footer : {
             custom : null,
             controls : {
+                before : null,
                 custom : null,
+                after : null,
             }
         },
         icons : {
@@ -183,17 +191,20 @@ export class UiModalTemplate extends UiTemplate {
                         ( data.header.custom ? data.header.custom : '' ) +
                         ( data.header.controls ?
                             `<div class="ui-modal__dialog-controls">` +
+                            ( data.header.controls.before ? data.header.controls.before : '' ) +
                             ( data.header.controls.custom ?
                                 data.header.controls.custom
                                 : `<button class="ui-modal__button ui-modal__button--close ${data.buttons.closetop}" type="button" data-modal="ctrl:close">` +
                                     `<span class="ui-modal__icon ui-icon" data-icon="${data.icons.closetop}"><span></span></span>` +
                                     `<span class="ui-modal__label ui-button__label">${data.i18n.closetop}</span></button>`
-                            ) + `</div>`
+                            ) +
+                            ( data.header.controls.after ? data.header.controls.after : '' ) +
+                            `</div>`
                             : ''
                         ) + `</div>`
                         : ''
                     ) +
-                    `<div class="ui-modal__dialog-scrollable" tabindex="0">` +
+                    `<div class="ui-modal__dialog-scrollable"${data.focusable ? ' tabindex="0"' : ''}>` +
                         `<div class="ui-modal__dialog-content">${data.content}</div>` +
                     `</div>` +
                     ( data.footer ?
@@ -201,6 +212,7 @@ export class UiModalTemplate extends UiTemplate {
                             ( data.footer.custom ? data.footer.custom : '' ) +
                             ( data.footer.controls ?
                                 `<div class="ui-modal__dialog-controls">` +
+                                    ( data.footer.controls.before ? data.footer.controls.before : '' ) +
                                     ( data.footer.controls.custom ?
                                         data.footer.controls.custom
                                         : ( mode === 'modal' ?
@@ -223,6 +235,7 @@ export class UiModalTemplate extends UiTemplate {
                                               )
                                           )
                                     ) +
+                                    ( data.footer.controls.after ? data.footer.controls.after : '' ) +
                                 `</div>`
                                 : ''
                             ) +
@@ -233,84 +246,4 @@ export class UiModalTemplate extends UiTemplate {
             `</div>` +
         `</section>`;
     }
-
-    // Inherited from: UiTemplate
-
-    /**
-     * Load template from dom
-     * @name UiModalTemplate.getTemplate
-     * @method
-     * @public
-     * @static
-     * @param {string} id - Element id
-     * @return {string} - Template string
-     */
-
-    /**
-     * Debug object
-     * @name UiModalTemplate.debug
-     * @public
-     * @property
-     * @type {null|console|Object}
-     */
-
-    /**
-     * Template render error output
-     * @name UiModalTemplate#errorMessage
-     * @public
-     * @property
-     * @type {null|string}
-     */
-
-    /**
-     * Constructor
-     * @name UiModalTemplate.constructor
-     * @constructor
-     * @param {UiModalTemplateData} data - Template data
-     * @param {null|console} debug - Debug object
-     */
-
-    /**
-     * Template data
-     * @name UiModalTemplate#data
-     * @property
-     * @public
-     * @type {null|UiModalTemplateData}
-     */
-
-    /**
-     * Render as node
-     * @name UiModalTemplate#asNode
-     * @method
-     * @public
-     * @param {UiModalTemplateData} data - Template data
-     * @return {NodeList|Array} - Rendered nodes or empty array
-     */
-
-    /**
-     * Append rendered template
-     * @name UiModalTemplate#append
-     * @method
-     * @public
-     * @param {HTMLElement} to - Element to append to
-     * @param {UiModalTemplateData} data - Template data
-     * @return {void}
-     */
-
-    /**
-     * Render template
-     * @name UiModalTemplate#render
-     * @method
-     * @public
-     * @param {UiModalTemplateData} data - Template data
-     * @return {string} - Rendered template
-     */
-
-    /**
-     * To string conversion
-     * @name UiModalTemplate#toString
-     * @method
-     * @public
-     * @return {string} - rendered template
-     */
 }
