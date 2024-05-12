@@ -1,6 +1,6 @@
 {
   "name": "@squirrel-forge/ui-modal",
-  "version": "0.6.3",
+  "version": "0.7.0",
   "description": "An accessible modal with custom events, plugin support, css and sass styling options and multiple template formats.",
   "main": "src/js/index.js",
   "style": "src/css/modal.min.css",
@@ -47,7 +47,7 @@
     "@squirrel-forge/sass-package-importer": "^0.11.x"
   },
   "dependencies": {
-    "@squirrel-forge/sass-util": "^0.9.x",
-    "@squirrel-forge/ui-core": "^0.11.x"
+    "@squirrel-forge/sass-util": "^0.10.x",
+    "@squirrel-forge/ui-core": "^0.12.x"
   }
 }

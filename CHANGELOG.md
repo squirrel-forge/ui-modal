@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.7.0
+ - Updated *UiModalComponent* and fixed animation state issues with *window.setTimeout()*.
+ - Updated *UiModalComponent*, *UiModalPluginConfirm* and *UiModalPluginPrompt* event prefix.
+ - Updated *UiModalTemplate* with more rendering options.
+
 ## 0.6.3
  - Fixed *tabFocusLock* for hidden modals.
  - Added *display* control via *animator.vis* option, default true, fixes focusable hidden elements.
