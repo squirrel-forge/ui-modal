@@ -58,7 +58,7 @@ export class UiModalPluginConfirm extends UiPlugin {
 
         // Register events
         this.registerEvents = [
-            [ 'initialized', ( event ) => { this.#event_initialized( event ); } ],
+            [ 'modal.initialized', ( event ) => { this.#event_initialized( event ); } ],
             [ 'modal.show', () => {
                 if ( this.context.mode !== 'confirm' ) return;
                 this.context.confirmed = false;
@@ -66,7 +66,7 @@ export class UiModalPluginConfirm extends UiPlugin {
             [ 'modal.hide', ( event ) => {
                 if ( this.context.mode !== 'confirm' ) return;
                 if ( !this.context.confirmed ) {
-                    if ( !this.context.dispatchEvent( 'modal.confirm.cancel', null, true, true ) ) {
+                    if ( !this.context.dispatchEvent( ( this.context.config.get( 'eventPrefix' ) || '' ) + 'confirm.cancel', null, true, true ) ) {
                         event.preventDefault();
                     }
                 }
@@ -94,7 +94,7 @@ export class UiModalPluginConfirm extends UiPlugin {
         bindNodeList( this.context.getDomRefs( 'confirm.confirm' ), [
             [ 'click', ( event ) => {
                 event.preventDefault();
-                if ( this.context.dispatchEvent( 'modal.confirm.confirm', null, true, true ) ) {
+                if ( this.context.dispatchEvent( ( this.context.config.get( 'eventPrefix' ) || '' ) + 'confirm.confirm', null, true, true ) ) {
                     this.context.confirmed = true;
                     this.context.hide();
                 }
